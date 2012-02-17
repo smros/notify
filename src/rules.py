@@ -27,10 +27,10 @@ def create_handlers(debugging=False):
     """Return a list of handlers."""
     handlers = [
         StateHandler(always, watchers),
-        dbHandler(is_moved_to_working,None),
-        MailHandler(is_moved_to_ready, watchers),
+        dbHandler(always,None),
+        MailHandler(always, watchers),
         MailHandler(is_marked_blocked, everyone),
-        MailHandler(is_marked_idle, active_members_with_creator),
+#        MailHandler(is_marked_idle, active_members_with_creator),
         FeedHandler(u'AgileZen: all', 'all', always),
         WebhookHandler(is_new) ]
     def _create_feedhandler(project_id):

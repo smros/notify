@@ -74,7 +74,7 @@ class dbHandler():
                         if item[2] != owner:
                             print 'Owner changed!'
                             # Close old entry
-                            db.updateEndTime(prjID, storyID, owner, item[0], datetime.datetime.now().isoformat('-'))
+                            db.updateEndTime(prjID, storyID, item[2], item[0], datetime.datetime.now().isoformat('-'))
                             # Insert new one
                             db.insertEvent(message)
 
