@@ -53,7 +53,7 @@ class projectStoriesDB(sqlliteDB):
 
         self.executeTransaction2(prefix, dataTuple)
 
-    def getEvent(self, projectID=None, storyID=None, owner=None, startTime=None):
+    def getEndTime(self, projectID=None, storyID=None, owner=None, startTime=None):
         prefix = ''' select endTime from projectStories where project = ? and story = ? and owner = ? and startTime = ? '''
         data=self.executeQueryFetchAll2(prefix, (projectID, storyID, owner, startTime ) )
         return(data)
@@ -69,12 +69,22 @@ if __name__ == "__main__":
 
     q=projectStoriesDB('agileZenStories.db')
     #q.createProjectStoriesDB()
-    data=q.getEvent('12345', '1', 'steve','2008-01-01-12:00:00')
+    data=q.getEndTime('12345', '1', 'steve','2008-01-01-12:00:00')
     print data
-    data=q.getEvent('99999', '3', 'johnny','1999-01-01-12:00:00')
-    print data
-    data=q.getEvent('99999', '3', 'johnny','1999-01-01-12:01:00')
-    print data
+    if data.__len__()==0:
+        print 'No data'
+    else:
+        print data[0]
+    data=q.getEndTime('99999', '3', 'johnny','1999-01-01-12:00:00')
+    if data.__len__()==0:
+        print 'No data'
+    else:
+        print data[0]
+    data=q.getEndTime('99999', '3', 'johnny','1999-01-01-12:01:00')
+    if data.__len__()==0:
+        print 'No data'
+    else:
+        print data[0]
     
     q.closeDB()
 
