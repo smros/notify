@@ -31,6 +31,7 @@ MARKED_IDLE_RE = '\) was moved from .*? to Working-Idle'
 MARKED_REASSIGNED_RE = '\) was reassigned from '
 MOVED_TO_WORKING_RE = 'was moved from .*? to Working'
 MOVED_TO_READY_RE = 'was moved from .*? to Ready'
+MOVED_FROM_WORKING_RE = 'was moved from Working to .*?'
 CAUSER_RE = '\sby\s([A-Z]\w+\s[A-Z]\w+)'
 ASSIGNED_TO_RE = '\sto\s([A-Z]\w+\s[A-Z]\w+)'
 

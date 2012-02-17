@@ -30,8 +30,39 @@ class dbHandler():
         prjID=message.project_id
         storyID=message.story_id
         owner=message.owner
+        status=message.status
 
+        # Check all this logic, first check if status is the phase.
+        # if working then enter new entry with owner and time
+        # If not, check if it is in the dB with startTime, but no endTime. This
+        # should indicate time event that needs to be logged.
+        #
+        # Remember this handler gets called for both moved to working and moved out.
+        # and maybe for everything
+        #
+        # Or watch only from .? to Working or from ?.to Working
+        #
         # Check if story is in DB yet, with startTime
+
+        db=projectStoriesDB(DB_NAME)
+
+        data=db.getStories(prjID, storyID, owner)
+        print data
+        if data.__len__()==0:
+            print 'No data'
+            db.insertEvent(message)
+        else:
+            for item in data:
+                # Now look for a endTIme.  If it exists, skip
+                # that item.
+                if item[1]==None:
+                    # Found our entry, update with endtime.
+                    db.updateEndTime(prjID, storyID, owner, item[0])
+            # No endtime was found, item must be new
+            db.insertEvent(message)
+
+        db.closeDB()
+
 
             # If so, check if story has been moved to anything but Working,
             # then  calculate duration, update endtime

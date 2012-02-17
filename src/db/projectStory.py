@@ -53,15 +53,25 @@ class projectStoriesDB(sqlliteDB):
 
         self.executeTransaction2(prefix, dataTuple)
 
+    def getStories(self, projectID=None, storyID=None, owner=None):
+        prefix = ''' select startTime, endTime from projectStories where project = ? and story = ? and owner = ?  '''
+        data=self.executeQueryFetchAll2(prefix, (projectID, storyID, owner ) )
+        return(data)
+
+    def updateEndTime(self,self, projectID=None, storyID=None, owner=None, startTime=None):
+        prefix = ''' update endTime where project = ? and story = ? and owner = ? and startTime = ? '''
+        data=self.executeTransaction2(prefix, (projectID, storyID, owner, startTime ) )
+        
+
     def getEndTime(self, projectID=None, storyID=None, owner=None, startTime=None):
         prefix = ''' select endTime from projectStories where project = ? and story = ? and owner = ? and startTime = ? '''
         data=self.executeQueryFetchAll2(prefix, (projectID, storyID, owner, startTime ) )
         return(data)
 
-    def getTitlesFromDB(self):
-        prefix = ''' select distinct title from quotes'''
-        data=self.executeQueryFetchAll(prefix)
-        return(data)
+#    def getTitlesFromDB(self):
+#        prefix = ''' select distinct title from quotes'''
+#        data=self.executeQueryFetchAll(prefix)
+#        return(data)
 
 
 
