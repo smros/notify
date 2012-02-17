@@ -64,6 +64,8 @@ class AZMessage():
         self.owner_mail = None
         self.content = None
         self.content_plain = None
+        self.phase = None
+        self.phase_name = None
 
         source = tostring(xmpp_msg['html']['body'])
         self._load_project_and_story(source)
@@ -111,6 +113,8 @@ class AZMessage():
             self.creator_mail = story['creator']['email']
             self.owner = story['owner']['name']
             self.owner_mail = story['owner']['email']
+            self.phase = story['phase']
+            self.phase_name=story['phase']['name']
         except KeyError as err:
             raise MessageCreationException(
                 'Failed to read data from API: ' + str(err))

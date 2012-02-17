@@ -30,7 +30,7 @@ def create_handlers(debugging=False):
         dbHandler(is_moved_to_working,None),
         MailHandler(is_moved_to_ready, watchers),
         MailHandler(is_marked_blocked, everyone),
-        MailHandler(is_marked_deployed, active_members_with_creator),
+        MailHandler(is_marked_idle, active_members_with_creator),
         FeedHandler(u'AgileZen: all', 'all', always),
         WebhookHandler(is_new) ]
     def _create_feedhandler(project_id):
@@ -52,13 +52,17 @@ def is_marked_blocked(msg):
     """See comment in message.py"""
     return msg.is_marked_blocked()
 
-def is_marked_deployed(msg):
+def is_marked_idle(msg):
     """See comment in message.py"""
-    return msg.is_marked_deployed()
+    return msg.is_marked_idle()
 
 def is_moved_to_ready(msg):
     """See comment in message.py"""
     return msg.is_moved_to_ready()
+
+def is_moved_to_working(msg):
+    """See comment in message.py"""
+    return msg.is_moved_to_working()
 
 def always(msg):
     """For handlers that should trigger in all cases."""

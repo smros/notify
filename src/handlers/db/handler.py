@@ -2,10 +2,13 @@
 from ConfigParser import RawConfigParser
 import os.path
 import sys
-sys.path.append('../../src')
-sys.path.append('../../src/db')
-from projectStory import projectStoriesDB
+import datetime
+sys.path.append('../../')
+sys.path.append('/home/steve/notify/src/db')
 import api
+print sys.path
+from projectStory import projectStoriesDB
+
 
 ## Config stuff here
 
@@ -15,7 +18,7 @@ CFG_PATH = os.path.join(
 CONFIG = RawConfigParser()
 CONFIG.read(CFG_PATH)
 DB_NAME =  os.path.join(
-    os.path.dirname(__file__), '..','..','..',CONFIG.get('db', 'dbname') )
+    os.path.dirname(__file__), '..','..','db',CONFIG.get('db', 'dbname') )
 
 
 class dbHandler():
@@ -30,7 +33,7 @@ class dbHandler():
         prjID=message.project_id
         storyID=message.story_id
         owner=message.owner
-        status=message.status
+        status=message.phase_name
 
         # Check all this logic, first check if status is the phase.
         # if working then enter new entry with owner and time
@@ -43,12 +46,14 @@ class dbHandler():
         # Or watch only from .? to Working or from ?.to Working
         #
         # Check if story is in DB yet, with startTime
-
+        print 'DB NAME'
+        print DB_NAME
         db=projectStoriesDB(DB_NAME)
 
         data=db.getStories(prjID, storyID)
         print 'Here is the current data in the DB re: this story'
         print data
+        print 'Status: ' + status
         print '---------'
         if status =='Working':
             if data.__len__()==0:
@@ -56,9 +61,14 @@ class dbHandler():
                 print 'Inserting new tracking event into db'
                 db.insertEvent(message)
             else:
+                foundOpen=False
                 for item in data:
+                    print 'Story exists in db, looking for open entry...'
+                    print item
+                    print '-----'
                    # Check for open entry (i.e. one with no endTime)
                     if item[1]==None:
+                        foundOpen=True
                         # Found an open entry against this story, check if owner
                         # changed
                         if item[2] != owner:
@@ -73,6 +83,12 @@ class dbHandler():
                             # Owner is the same, status is still working so ignore
                             pass
 
+                if not(foundOpen):
+                    # An open entry was not found, create a new one
+                    print 'Does not exist, creating new event..'
+                    db.insertEvent(message)
+
+
         else:
             # Status is 'not' working, check to see if this is in the db
             # without an endtime.
@@ -85,7 +101,7 @@ class dbHandler():
                     #
                     if item[1]==None:
                         # Found our entry, update with endtime.
-                        db.updateEndTime(prjID, storyID, owner, item[0], item[1])
+                        db.updateEndTime(prjID, storyID, owner, item[0], datetime.datetime.now().isoformat('-'))
 
         db.closeDB()
 
