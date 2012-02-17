@@ -46,20 +46,46 @@ class dbHandler():
 
         db=projectStoriesDB(DB_NAME)
 
-        data=db.getStories(prjID, storyID, owner)
+        data=db.getStories(prjID, storyID)
+        print 'Here is the current data in the DB re: this story'
         print data
-        if data.__len__()==0:
-            print 'No data'
-            db.insertEvent(message)
+        print '---------'
+        if status =='Working':
+            if data.__len__()==0:
+                print 'No data'
+                print 'Inserting new tracking event into db'
+                db.insertEvent(message)
+            else:
+                for item in data:
+                   # Check for open entry (i.e. one with no endTime)
+                    if item[1]==None:
+                        # Found an open entry against this story, check if owner
+                        # changed
+                        if item[2] != owner:
+                            print 'Owner changed!'
+                            # Close old entry
+                            db.updateEndTime(prjID, storyID, owner, item[0], datetime.datetime.now().isoformat('-'))
+                            # Insert new one
+                            db.insertEvent(message)
+
+                        else:
+                            # Ignore, something else triggered the event,
+                            # Owner is the same, status is still working so ignore
+                            pass
+
         else:
+            # Status is 'not' working, check to see if this is in the db
+            # without an endtime.
             for item in data:
-                # Now look for a endTIme.  If it exists, skip
-                # that item.
-                if item[1]==None:
-                    # Found our entry, update with endtime.
-                    db.updateEndTime(prjID, storyID, owner, item[0])
-            # No endtime was found, item must be new
-            db.insertEvent(message)
+                    #
+                    # Check for open entry (i.e. one with no endTime) if we go
+                    # through all entries with no updates, then the story
+                    # probably moved from a !Working status to another !Working
+                    # status, so no action required.
+                    #
+                    if item[1]==None:
+                        # Found our entry, update with endtime.
+                        db.updateEndTime(prjID, storyID, owner, item[0], item[1])
 
         db.closeDB()
 

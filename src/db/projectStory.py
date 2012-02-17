@@ -40,11 +40,10 @@ class projectStoriesDB(sqlliteDB):
 
     def insertEvent(self, message):
         # Build the sql trasaction here and run the insert
-        prefix = ''' insert or ignore into quotes values (?,?,?,?,?)'''
+        prefix = ''' insert or ignore into projectStories (project, story, owner, startTime) values (?,?,?,?)'''
         dataTuple=(message.project_id,
         message.story_id,
         message.owner,
-        message.locEnd,
         datetime.datetime.now().isoformat('-')
         )
 
@@ -54,13 +53,13 @@ class projectStoriesDB(sqlliteDB):
         self.executeTransaction2(prefix, dataTuple)
 
     def getStories(self, projectID=None, storyID=None, owner=None):
-        prefix = ''' select startTime, endTime from projectStories where project = ? and story = ? and owner = ?  '''
-        data=self.executeQueryFetchAll2(prefix, (projectID, storyID, owner ) )
+        prefix = ''' select startTime, endTime, owner from projectStories where project = ? and story = ?'''
+        data=self.executeQueryFetchAll2(prefix, (projectID, storyID ) )
         return(data)
 
-    def updateEndTime(self,self, projectID=None, storyID=None, owner=None, startTime=None):
-        prefix = ''' update endTime where project = ? and story = ? and owner = ? and startTime = ? '''
-        data=self.executeTransaction2(prefix, (projectID, storyID, owner, startTime ) )
+    def updateEndTime(self, projectID=None, storyID=None, owner=None, startTime=None, endTime=None):
+        prefix = ''' update projectStories set endTime = ? where project = ? and story = ? and owner = ? and startTime = ?  '''
+        data=self.executeTransaction2(prefix, (endTime, projectID, storyID, owner, startTime ) )
         
 
     def getEndTime(self, projectID=None, storyID=None, owner=None, startTime=None):
@@ -95,7 +94,25 @@ if __name__ == "__main__":
         print 'No data'
     else:
         print data[0]
-    
+
+    data=q.getStories('99999', '3','ALL')
+    if data.__len__()==0:
+        print 'No data'
+    else:
+        print 'Found data!'
+        print data
+
+        for item in data:
+            if item[1]==None:
+                print 'Found an open entry'
+                print item[0]
+            else:
+                print 'Found a closed entry:'
+                print item[0]
+                print item[1]
+                print item[2]
+
+
     q.closeDB()
 
 
