@@ -69,6 +69,40 @@ def get_stories(project_id):
     print response
     return _parse_response(response)
 
+def add_comment(project_id, story_id, comment_txt):
+    """POST https://agilezen.com/api/v1/projects/{projectid}/stories/{storyid}/comments"""
+    path = API_PATH_PREFIX
+    path +='/projects/' + str(project_id) + '/stories/'
+    path += story_id
+    path += '/comments'
+
+    data=json.dumps(comment_txt)
+
+    print path
+    conn = httplib.HTTPSConnection(API_DOMAIN)
+    conn.request("POST", path, data, headers=API_HEADERS)
+    response = conn.getresponse().read()
+    print response
+    return _parse_response(response)
+
+def update_comment(project_id, story_id, comment_id, comment_txt):
+    """PUT https://agilezen.com/api/v1/projects/{projectid}/stories/{storyid}/comments/{commentid}"""
+
+    path = API_PATH_PREFIX
+    path +='/projects/' + str(project_id) + '/stories/'
+    path += story_id
+    path += '/comments/'
+    path += comment_id
+
+    data=json.dumps(comment_txt)
+
+    print path
+    conn = httplib.HTTPSConnection(API_DOMAIN)
+    conn.request("PUT", path, data, headers=API_HEADERS)
+    response = conn.getresponse().read()
+    print response
+    return _parse_response(response)
+
 def get_active_project_ids():
     """Return a the IDs of all non-archived projects.""" 
     data = get_projects()
