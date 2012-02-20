@@ -85,6 +85,7 @@ if __name__ == "__main__":
     
     for item in stories['items']:
         for comments in item['comments']:
+            storyID=item['id']
             print 'Comment ID: ' + str(comments['id']) + ' comment text: ' + comments['text']
             id=comments['id']
             cText=comments['text']
@@ -107,5 +108,10 @@ if __name__ == "__main__":
                 else:
                     print 'New Entry found'
                     print 'Need to log ' + str(duration) + ' hours for ' + users[owner]
+                    #
+                    # Now update comment with logged, as if it was updated in the db
+                    #
+                    updateText='TC:'+ owner + ', ' + duration +', '+ 'Logged'
+                    api.update_comment(projID, storyID, id, updateText)
                     
 
