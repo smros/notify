@@ -9,6 +9,7 @@ import sys
 sys.path.append('../src')
 import api
 import time
+#import yaml
 
 # load config
 CFG_PATH = os.path.join(
@@ -30,13 +31,13 @@ if __name__ == "__main__":
 
     # Test parameters
 
-    projID=35644
-    storyID=3
+#    projID=35644
+#    storyID=3
 
 
-    print 'Testing add comment'
-    storyInit=api.get_story(projID, storyID)
-    print storyInit
+#    print 'Testing add comment'
+#    storyInit=api.get_story(projID, storyID)
+#    print storyInit
 
 #    commentTxt='Test Comment from API'
 #
@@ -45,13 +46,66 @@ if __name__ == "__main__":
 ##
 #    projID=32199
 #    storyID=5
-    print 'Getting story ' + str(storyID)
-    print api.get_story(projID, storyID)
+#    print 'Getting story ' + str(storyID)
+#    print api.get_story(projID, storyID)
+#
+#    commentID=343796
+#    commentTxt = 'Test of update comment: ' + str(time.time())
+#
+#    print 'Testing update comment'
+#    resp=api.update_comment(projID, storyID, commentID, commentTxt)
 
-    commentID=343796
-    commentTxt = 'Test of update comment: ' + str(time.time())
+# Test search for unlogged time comments, will have te
 
-    print 'Testing update comment'
-    resp=api.update_comment(projID, storyID, commentID, commentTxt)
+    # Import users from yaml file.  Then load all stories from a project
+    # cycle through all comments looking for lines that begin with TC:
+    #
+    #Examples:
+    #
+    #TC: 4.5, SM, Worked on plane, Logged
+    #TC: -4.5, SM, Correction
+    #TC: 5.0, RI, Worked on weekend
+    #
+    # Get this from yaml file later
+    users=dict()
+    users['RI']='iraschko'
+    users['SM']='smroszczak'
+    users['DA']='dannet'
+    users['JC']='jcordova'
 
+    # Get stories
+    projID=35644
+
+    stories=api.get_stories(projID)
+
+    print 'All stories..'
+    print stories['items']
+
+    print 'Now printing comments..'
+    
+    for item in stories['items']:
+        for comments in item['comments']:
+            print 'Comment ID: ' + str(comments['id']) + ' comment text: ' + comments['text']
+            id=comments['id']
+            cText=comments['text']
+            stripHeader=cText.split(':')
+            print 'stripHeader'
+            print stripHeader[0]
+            if stripHeader.__len__()>1:
+                print stripHeader[1]
+                print str(stripHeader[1]).split(',')
+            if stripHeader[0]=='TC':
+                print 'Found log entry'
+                parsedComment=str(stripHeader[1])
+                print 'parsed Comment:'
+                parsedComment=parsedComment.split(',')
+
+                duration=parsedComment[1].lstrip()
+                owner=parsedComment[0].lstrip()
+                if parsedComment[-1].lstrip()=='Logged':
+                    print 'Comment already logged!'
+                else:
+                    print 'New Entry found'
+                    print 'Need to log ' + str(duration) + ' hours for ' + users[owner]
+                    
 
