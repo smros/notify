@@ -73,10 +73,10 @@ def add_comment(project_id, story_id, comment_txt):
     """POST https://agilezen.com/api/v1/projects/{projectid}/stories/{storyid}/comments"""
     path = API_PATH_PREFIX
     path +='/projects/' + str(project_id) + '/stories/'
-    path += story_id
+    path += str(story_id)
     path += '/comments'
 
-    data=json.dumps(comment_txt)
+    data=json.dumps({"text":comment_txt})
 
     print path
     conn = httplib.HTTPSConnection(API_DOMAIN)
@@ -90,11 +90,11 @@ def update_comment(project_id, story_id, comment_id, comment_txt):
 
     path = API_PATH_PREFIX
     path +='/projects/' + str(project_id) + '/stories/'
-    path += story_id
+    path += str(story_id)
     path += '/comments/'
-    path += comment_id
+    path += str(comment_id)
 
-    data=json.dumps(comment_txt)
+    data=json.dumps({"text":comment_txt})
 
     print path
     conn = httplib.HTTPSConnection(API_DOMAIN)

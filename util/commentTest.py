@@ -8,6 +8,7 @@ from ConfigParser import RawConfigParser
 import sys
 sys.path.append('../src')
 import api
+import time
 
 # load config
 CFG_PATH = os.path.join(
@@ -29,24 +30,28 @@ if __name__ == "__main__":
 
     # Test parameters
 
-    projID=32199
-    storyID=5
+    projID=35644
+    storyID=3
 
 
     print 'Testing add comment'
     storyInit=api.get_story(projID, storyID)
+    print storyInit
 
 #    commentTxt='Test Comment from API'
 #
 #    resp=api.add_comment(projID, storyID, commentTxt)
 #    print resp
-#
+##
 #    projID=32199
 #    storyID=5
-#    commentID=10
-#    commentTxt = 'Test of update comment: ' + str(time.time())
-#
-#    print 'Testing update comment'
-#    resp=api.update_comment(projID, storyID, commentID, commentTxt)
+    print 'Getting story ' + str(storyID)
+    print api.get_story(projID, storyID)
+
+    commentID=343796
+    commentTxt = 'Test of update comment: ' + str(time.time())
+
+    print 'Testing update comment'
+    resp=api.update_comment(projID, storyID, commentID, commentTxt)
 
 
