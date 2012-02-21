@@ -23,6 +23,7 @@ class projectStoriesDB(sqlliteDB):
                 startTime DATETIME,
                 endTime DATETIME,
                 duration FLOAT,
+                comment TEXT,
                 primary key (project, story, owner, startTime)
                 );
 
