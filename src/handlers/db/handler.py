@@ -20,6 +20,12 @@ CONFIG.read(CFG_PATH)
 DB_NAME =  os.path.join(
     os.path.dirname(__file__), '..','..','db',CONFIG.get('db', 'dbname') )
 
+users=dict()
+users['RI']='Rainer Iraschko'
+users['SM']='Stephen Mroszczak'
+users['DA']='Don Annett'
+users['JC']='Johnny Cordova'
+users['BF']='Bill Friedrich'
 
 class dbHandler():
     
@@ -102,6 +108,53 @@ class dbHandler():
                     if item[1]==None:
                         # Found our entry, update with endtime.
                         db.updateEndTime(prjID, storyID, owner, item[0], datetime.datetime.now().isoformat('-'))
+
+        # Check for unlogged "timecard comments".  This should be in different handler
+        # or triggered only when a comment event happens, but for now, check on every
+        # story.
+
+        # Get the story here, put in item
+        #
+        # Then scan comments.
+        #
+        print 'Entering comments scan, looking for unlogged timecard messages.'
+        item = api.get_story(prjID, storyID)
+
+        for comments in item['comments']:
+
+            print 'Comment ID: ' + str(comments['id']) + ' comment text: ' + comments['text']
+            id=comments['id']
+            cText=comments['text']
+            stripHeader=cText.split(':')
+            print 'stripHeader'
+            print stripHeader[0]
+            if stripHeader.__len__()>1:
+                print stripHeader[1]
+                print str(stripHeader[1]).split(',')
+            if stripHeader[0]=='TC':
+                print 'Found log entry'
+                parsedComment=str(stripHeader[1])
+                print 'parsed Comment:'
+                parsedComment=parsedComment.split(',')
+
+                duration=parsedComment[1].lstrip()
+                owner=parsedComment[0].lstrip()
+                timeCardOwner=users[owner]
+                if parsedComment[-1].lstrip()=='Logged':
+                    print 'Comment already logged!'
+                else:
+                    print 'New Entry found'
+                    print 'Need to log ' + str(duration) + ' hours for ' + timeCardOwner
+                    #
+                    # Now update comment with logged, as if it was updated in the db
+                    #
+                    updateText='TC:'+ owner + ', ' + duration +', '+ 'Logged'
+                    api.update_comment(prjID, storyID, id, updateText)
+                    #
+                    # And, update the database with a timecard entry.
+                    #
+                    db.insertTimecard(message, timeCardOwner, duration)
+
 
         db.closeDB()
 

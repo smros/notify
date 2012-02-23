@@ -9,7 +9,7 @@ import sys
 sys.path.append('../src')
 import api
 import time
-#import yaml
+import yaml
 
 # load config
 CFG_PATH = os.path.join(

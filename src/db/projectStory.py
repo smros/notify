@@ -24,6 +24,7 @@ class projectStoriesDB(sqlliteDB):
                 endTime DATETIME,
                 duration FLOAT,
                 comment TEXT,
+                timecard INTEGER,
                 primary key (project, story, owner, startTime)
                 );
 
@@ -50,6 +51,23 @@ class projectStoriesDB(sqlliteDB):
 
 #        print prefix
 #        print dataTuple
+
+        self.executeTransaction2(prefix, dataTuple)
+
+    def insertTimecard(self, message, timeCardOwner, duration):
+    # Build the sql trasaction here and run the insert
+        prefix = ''' insert or ignore into projectStories (project, story, owner, startTime, duration, timecard) values (?,?,?,?,?,?)'''
+        dataTuple=(message.project_id,
+        message.story_id,
+        timeCardOwner,
+        datetime.datetime.now().isoformat('-'),
+        str(duration),
+        '1'
+
+        )
+
+        #        print prefix
+        #        print dataTuple
 
         self.executeTransaction2(prefix, dataTuple)
 
