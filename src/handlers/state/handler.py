@@ -60,6 +60,9 @@ class StateHandler():
             storyList=[message.creator_mail, message.owner_mail]
             storyDict=dict()
 
+
+        # Remove duplicates from list
+        
         storyDict[storyID]=list(set(storyList))
 
         try:

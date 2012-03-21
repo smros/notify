@@ -77,10 +77,13 @@ class projectStoriesDB(sqlliteDB):
         return(data)
 
     def updateEndTime(self, projectID=None, storyID=None, owner=None, startTime=None, endTime=None):
-        prefix = ''' update projectStories set endTime = ? where project = ? and story = ? and owner = ? and startTime = ?  '''
-        data=self.executeTransaction2(prefix, (endTime, projectID, storyID, owner, startTime ) )
+        startTimeDatetimeObj=datetime.datetime.strptime(startTime, "%Y-%m-%d-%H:%M:%S.%f")
+        endTimeDatetimeObj=datetime.datetime.strptime(endTime, "%Y-%m-%d-%H:%M:%S.%f")
         
-
+        duration=(endTimeDatetimeObj-startTimeDatetimeObj).seconds/60.0
+        prefix = ''' update projectStories set endTime = ?, duration = ? where project = ? and story = ? and owner = ? and startTime = ?  '''
+        data=self.executeTransaction2(prefix, (endTime, str(duration), projectID, storyID, owner, startTime ) )
+        
     def getEndTime(self, projectID=None, storyID=None, owner=None, startTime=None):
         prefix = ''' select endTime from projectStories where project = ? and story = ? and owner = ? and startTime = ? '''
         data=self.executeQueryFetchAll2(prefix, (projectID, storyID, owner, startTime ) )
